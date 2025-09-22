@@ -82,7 +82,7 @@ def retrieve_ads(user_query, top_k=5):
 # ------------------------------
 st.set_page_config(page_title="Ad Retriever - v2 ", page_icon="📢", layout="centered")
 
-st.title("📢 Ad Retriever (RAG Demo)")
+st.title("📢 Ad Retriever ")
 st.write("Type your query below and get the most relevant ads.")
 
 # Load and index ads (only once)
