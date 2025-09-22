@@ -31,7 +31,7 @@ DB_DIR = "chroma_ads_db"
 @st.cache_resource
 def get_chroma_collection():
     client = PersistentClient(path=DB_DIR)
-    return client.get_or_create_collection("ads_collection")
+    return client.get_or_create_collection(name = "ads_collection", metadata={"hnsw:space": "cosine"})
 
 collection = get_chroma_collection()
 
