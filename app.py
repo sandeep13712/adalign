@@ -1,18 +1,17 @@
+# ---- sqlite monkeypatch (fix before chroma import) ----
+import sys
+try:
+    import pysqlite3 as sqlite3_new
+    sys.modules["sqlite3"] = sqlite3_new
+    print("✅ Using pysqlite3 (SQLite version):", sqlite3_new.sqlite_version)
+except Exception as e:
+    print("⚠️ Could not load pysqlite3:", e)
+
+# ---- normal imports ----
 import os
 import streamlit as st
 import numpy as np
 from sentence_transformers import SentenceTransformer
-
-
-import sys
-try:
-    import pysqlite3 as sqlite3_new
-    sys.modules['sqlite3'] = sqlite3_new   # override built-in sqlite3
-    print("✅ Using pysqlite3 (SQLite version):", sqlite3_new.sqlite_version)
-except Exception as e:
-    print("⚠️ Could not load pysqlite3:", e)
-    
-import chromadb
 from chromadb import PersistentClient
 
 # ------------------------------
@@ -25,7 +24,7 @@ def load_model():
 embedder = load_model()
 
 # ------------------------------
-# Setup ChromaDB (Persistent)
+# Setup ChromaDB Persistent Client
 # ------------------------------
 DB_DIR = "chroma_ads_db"
 
@@ -59,8 +58,6 @@ def index_ads(ads):
                 metadatas=[{"ad_id": ad_id}],
                 ids=[ad_id],
             )
-    # Persist changes
-    collection.client.persist()
 
 # ------------------------------
 # Query Function
@@ -73,16 +70,19 @@ def retrieve_ads(user_query, top_k=5):
 # ------------------------------
 # Streamlit UI
 # ------------------------------
-st.title(" Ad Retriever (RAG Demo)")
+st.set_page_config(page_title="Ad Retriever - v2 ", page_icon="📢", layout="centered")
+
+st.title("📢 Ad Retriever (RAG Demo)")
 st.write("Type your query below and get the most relevant ads.")
 
-# Load and index ads (runs only once)
+# Load and index ads (only once)
 ads = load_ads("ads.txt")
 if ads:
     index_ads(ads)
 
-# User Query
+# 🚀 The Input Box (should now appear)
 user_query = st.text_input("Enter your query:")
+
 top_k = st.slider("Number of ads to retrieve:", 1, 10, 5)
 
 if user_query:
