@@ -63,9 +63,19 @@ def index_ads(ads):
 # Query Function
 # ------------------------------
 def retrieve_ads(user_query, top_k=5):
+    # Get embedding of the query
     query_embedding = embedder.encode([user_query], convert_to_numpy=True)
+    
+    # Query collection
     results = collection.query(query_embeddings=query_embedding, n_results=top_k)
-    return results["documents"][0]
+    
+    ads = results["documents"][0]
+    distances = results["distances"][0]  # Cosine distances
+    
+    # Convert to similarity scores (0 to 1) for better readability
+    similarity_scores = [1 - d for d in distances]  # smaller distance → higher similarity
+    
+    return list(zip(ads, similarity_scores))
 
 # ------------------------------
 # Streamlit UI
@@ -87,6 +97,7 @@ top_k = st.slider("Number of ads to retrieve:", 1, 10, 5)
 
 if user_query:
     results = retrieve_ads(user_query, top_k=top_k)
+    
     st.write("### 🔎 Top Relevant Ads")
-    for ad in results:
-        st.write(f"- {ad}")
+    for ad, score in results:
+        st.write(f"- {ad}  _(Similarity: {score:.2f})_")
