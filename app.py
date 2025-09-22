@@ -2,6 +2,16 @@ import os
 import streamlit as st
 import numpy as np
 from sentence_transformers import SentenceTransformer
+
+
+import sys
+try:
+    import pysqlite3 as sqlite3_new
+    sys.modules['sqlite3'] = sqlite3_new   # override built-in sqlite3
+    print("✅ Using pysqlite3 (SQLite version):", sqlite3_new.sqlite_version)
+except Exception as e:
+    print("⚠️ Could not load pysqlite3:", e)
+    
 import chromadb
 
 # ------------------------------
