@@ -13,6 +13,7 @@ except Exception as e:
     print("⚠️ Could not load pysqlite3:", e)
     
 import chromadb
+from chromadb import PersistentClient
 
 # ------------------------------
 # Setup Embedding Model
@@ -30,7 +31,7 @@ DB_DIR = "chroma_ads_db"
 
 @st.cache_resource
 def get_chroma_collection():
-    client = chromadb.Client(persist_directory=DB_DIR)
+    client = PersistentClient(path=DB_DIR)
     return client.get_or_create_collection("ads_collection")
 
 collection = get_chroma_collection()
